@@ -1,0 +1,1 @@
+/home/john/test/Based-Design-Theory/target/debug/Based-Design-Theory: /home/john/test/Based-Design-Theory/src/latin_square.rs /home/john/test/Based-Design-Theory/src/main.rs /home/john/test/Based-Design-Theory/src/speedy_strong.rs /home/john/test/Based-Design-Theory/src/starter.rs

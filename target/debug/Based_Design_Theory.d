@@ -1,0 +1,1 @@
+/mnt/c/Users/DSU\ Student/rust_book/Based-Design-Theory/target/debug/Based_Design_Theory: /mnt/c/Users/DSU\ Student/rust_book/Based-Design-Theory/src/latin_square.rs /mnt/c/Users/DSU\ Student/rust_book/Based-Design-Theory/src/main.rs /mnt/c/Users/DSU\ Student/rust_book/Based-Design-Theory/src/speedy_strong.rs /mnt/c/Users/DSU\ Student/rust_book/Based-Design-Theory/src/starter.rs
