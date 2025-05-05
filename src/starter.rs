@@ -267,4 +267,9 @@ impl Starter {
         }
         order.len() == (n - 1) as usize
     }
+    pub fn get_pairs(&self) -> Vec<(i32, i32)> {
+        let mut copy = self.pairs.clone();
+        copy.sort();
+        return copy;
+    }
 }

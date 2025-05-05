@@ -132,10 +132,7 @@ impl Stiner {
         }
         panic!("cannon insert");
     }
-    //fn score(&mut self, triple: (i32, i32, i32), depth: i32) -> i32
 
-    //fn best_insert(&self) -> (i32, i32, i32)
-    //
     fn double_construction(&self) -> Stiner {
         let mut temp_blocks = vec![];
         for b in &self.blocks {
@@ -163,11 +160,11 @@ impl Stiner {
 #[test]
 fn good_speedy_strong() {
     let n = 7;
-    let strong_starter = speedy_strong::create(n);
+    let strong_starter = speedy_strong::create(n, 0);
 }
 #[test]
 fn good_starter() {
-    let n = 11;
+    let n = 7;
     let starter = vec![(1, 3), (2, 6), (4, 5)];
     let strong_starter = starter::Starter::new(n, starter);
     strong_starter.unwrap();
@@ -175,9 +172,6 @@ fn good_starter() {
 #[test]
 fn good_strong_starter() {
     let n = 7;
-    //let starter = vec![(1, 5), (2, 3), (4, 6)];
-
-    //let strong_starter = starter::Starter::new(n, starter);
     let strong_starter = starter::Starter::new_strong(n, 0);
 }
 #[should_panic]
@@ -298,14 +292,8 @@ fn homework_helper(code: &str) -> i32 {
     map.insert("a".to_string(), 10);
     map.insert("b".to_string(), 11);
     map.insert("c".to_string(), 12);
-    /*
-    sts.insert((
-        *map.get(a).unwrap(),
-        *map.get(b).unwrap(),
-        *map.get(c).unwrap(),
-    ));
-    */
-    *map.get(code).expect("invalid code")
+    let x = map.get(code);
+    *x.unwrap()
 }
 
 #[test]
@@ -314,19 +302,6 @@ fn encoded_test() {
     let count = (n * (n - 1)) / 6;
     let mut sts = Stiner::new(n).expect("INVALID STS");
 
-    /*
-    homework_helper(&mut sts, ("0", "1", "c"));
-    homework_helper(&mut sts, ("0", "2", "b"));
-    homework_helper(&mut sts, ("0", "3", "6"));
-    homework_helper(&mut sts, ("0", "4", "a"));
-    homework_helper(&mut sts, ("0", "5", "9"));
-    homework_helper(&mut sts, ("0", "7", "8"));
-
-    homework_helper(&mut sts, ("1", "2", "3"));
-    homework_helper(&mut sts, ("1", "4", "5"));
-    homework_helper(&mut sts, ("1", "6", "7"));
-    homework_helper(&mut sts, ("2", "4", "7"));
-    */
     let seq = "cb6a983579b67ac8cba9cabcbc";
     for i in 0..seq.len() {
         sts.insert(sts.next_from_seq(homework_helper(&seq[i..i + 1])));
@@ -460,9 +435,11 @@ fn encoded_test() {
     println!("\n\nThere are {} blocks", based.len());
 }
 
-fn hamilton(n: i32, seed: u32) {
+#[test]
+fn hamilton_test() {
+    let n = 31;
+    let seed = 0;
     //focus: 31,35,17,55
-    //let strong_starter = starter::Starter::new_strong(n, 5);
     let strong_starter = speedy_strong::create(n, seed);
     let strong_starter = Starter::new(n, strong_starter).unwrap();
 
@@ -472,7 +449,6 @@ fn hamilton(n: i32, seed: u32) {
     for k in 0..(2 * n) {
         if k % 2 == 0 {
             let x = Starter::hamilton(n, k, &strong_starter, false);
-            //let patterned_starter = starter::Starter::new_patterned(n, k);
             if x {
                 print!("{},", k % n);
             }
@@ -481,33 +457,68 @@ fn hamilton(n: i32, seed: u32) {
 
     println!("\n∀(a,b)∈f(P) k=a+b such that: S U f(P) is a hamilton starter)");
 }
-
-fn main() {
-    /*
-    for i in 0..1000 {
-        hamilton(7, i);
-    }
-    */
-
-    for i in 0..500 {
-        hamilton(19, i);
-        println!();
-        println!();
-        println!();
-    }
-    /*
-    let n = 55;
-    let k = 22;
-    let seed = 2;
-    let patterned_starter = starter::Starter::new_patterned(n, k);
+fn hamilton(n: i32, seed:u32) {
+    //focus: 31,35,17,55
     let strong_starter = speedy_strong::create(n, seed);
     let strong_starter = Starter::new(n, strong_starter).unwrap();
-    println!("S={:?}", strong_starter);
+
+    assert!(strong_starter.is_strong());
+    println!("strong: {:?}", strong_starter);
+    print!("k=");
+    for k in 0..(2 * n) {
+        if k % 2 == 0 {
+            let x = Starter::hamilton(n, k, &strong_starter, false);
+            if x {
+                print!("{},", k % n);
+            }
+        }
+    }
+
+    println!("\n∀(a,b)∈f(P) k=a+b such that: S U f(P) is a hamilton starter)");
+}
+fn hamilton_skew(n: i32, seed: u32) {
+    let strong_starter_v = speedy_strong::create_skew(n, seed);
+    let strong_starter = Starter::new(n, strong_starter_v.clone()).unwrap();
+
+    assert!(strong_starter.is_strong());
+    println!("strong: {:?}", strong_starter.get_pairs());
+    print!("k=");
+    for k in 0..(2 * n) {
+        if k % 2 == 0 {
+            let x = Starter::hamilton(n, k, &strong_starter, false);
+            if x {
+                print!("{},", k % n);
+            }
+        }
+    }
+
+    println!("\n∀(a,b)∈f(P) k=a+b such that: S U f(P) is a hamilton starter)");
+    println!();
+    println!("{}", speedy_strong::skew(&strong_starter_v, n));
     println!();
 
-    println!("k={}", k);
-    println!("f(P) = {:?}", patterned_starter);
-    println!();
-    starter::Starter::hamilton(n, k, &strong_starter, true);
-    */
+    let mut assert_skew: HashMap<i32, (i32, i32)> = HashMap::new();
+    for pair in &strong_starter_v {
+        let sum = (pair.0 + pair.1) % n;
+        assert_skew.insert(sum, *pair);
+    }
+    for key in assert_skew.keys() {
+        if assert_skew.contains_key(&(n - key)) {
+            println!(
+                "{n} {key} {} {:?}",
+                (n - key),
+                assert_skew.get(&(n - key)).unwrap()
+            );
+            panic!("Invalid skew starter");
+        }
+    }
+    println!("SUMS:\n{:?}", assert_skew.keys().sorted());
+}
+
+fn main() {
+    //multiples of 3 seem to be an issue
+    hamilton(17,1000000);
+    //for i in 0..100000 {
+   // /}
+    //hamilton_skew(15, 0);
 }
