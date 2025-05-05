@@ -81,9 +81,6 @@ pub fn create(n: i32, nth: u32) -> Vec<(i32, i32)> {
             }
         }
         if s.len() == t as usize && nth > 0 {
-            let mut meme = s.clone();
-            meme.sort();
-            println!("meme {:?}",meme);
             nth -= 1;
             memory[(t - 1) as usize] += 1;
         } else if s.len() == t as usize && nth == 0 {

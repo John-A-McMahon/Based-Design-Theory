@@ -517,7 +517,7 @@ fn hamilton_skew(n: i32, seed: u32) {
 
 fn main() {
     //multiples of 3 seem to be an issue
-    hamilton(17,1000000);
+    hamilton(17,1000);
     //for i in 0..100000 {
    // /}
     //hamilton_skew(15, 0);
