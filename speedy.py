@@ -310,12 +310,4 @@ def test(t,n,starter):
     print(starter)
 def extreme():
     test(t,n,[])
-num_threads=1
-threads = []
-for i in range(num_threads):
-    threads.append(threading.Thread(target=extreme))
-for i in range(num_threads):
-    threads[i].start()
-for i in range(num_threads):
-    threads[i].join()
-
+extreme()
