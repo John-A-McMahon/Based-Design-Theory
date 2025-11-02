@@ -4,6 +4,10 @@ import copy
 import threading
 
 
+
+random.seed(67)
+
+
 '''
 This algorithm is based off of:
 A FAST ALGORITHM FOR FINDING STRONG STARTERS by J. H. DINITZt AND D. R. STINSON 1981
@@ -80,7 +84,6 @@ def get_pair_by_diff(starter,n,diff):
 
 
 def A(u1,u2,d,starter,n,unused,unused_sums,D,stack):
-    stack.append((u1,u2,d))
     T=calculate_T(n,u1,u2,d,unused)
     could_do_a=False
     for w in T:
@@ -89,16 +92,17 @@ def A(u1,u2,d,starter,n,unused,unused_sums,D,stack):
         x=(u1+w)%n
         y=(u2+w)%n
         if w in unused and x in unused_sums and can_insert((u1,w),starter,unused,unused_sums,D,n):
+            print("Step A","starter:",starter,"unused:",unused,"D",D,"u1:",u1,"u2:",u2,"d:",d)
             insert((u1,w),starter,unused,unused_sums,D,n)
             could_do_a=True
             break
         elif w in unused and y in unused_sums and can_insert((u2,w),starter,unused,unused_sums,D,n):
+            print("Step A","starter:",starter,"unused:",unused,"D",D,"u1:",u1,"u2:",u2,"d:",d)
             insert((u2,w),starter,unused,unused_sums,D,n)
             could_do_a=True
             break
     return could_do_a
 def B(u1,u2,d,starter,n,unused,unused_sums,D,stack):
-    stack.append((u1,u2,d))
     T=calculate_T(n,u1,u2,d,unused)
     i=0
     could_complete_b = False
@@ -137,28 +141,27 @@ def B(u1,u2,d,starter,n,unused,unused_sums,D,stack):
             break
     
     if i==1 and based_w==x_i:
-        stack.append((u2,y_i,min((u2-y_i)%n,(y_i-u2)%n)))
+        stack.append((starter,unused,unused_sums,D,u2,y_i,min((u2-y_i)%n,(y_i-u2)%n)))
     if i==1 and based_w==y_i:
-        stack.append((u2,x_i,min((u2-y_i)%n,(y_i-u2)%n)))
+        stack.append((starter,unused,unused_sums,D,u2,x_i,min((u2-y_i)%n,(y_i-u2)%n)))
     if i==2 and based_w==x_i:
-        stack.append((u1,y_i,min((u2-y_i)%n,(y_i-u2)%n)))
+        stack.append((starter,unused,unused_sums,D,u1,y_i,min((u2-y_i)%n,(y_i-u2)%n)))
     if i==2 and based_w==y_i:
-        stack.append((u1,x_i,min((u2-y_i)%n,(y_i-u2)%n)))
+        stack.append((starter,unused,unused_sums,D,u1,x_i,min((u2-y_i)%n,(y_i-u2)%n)))
     return could_complete_b
 
 def C(stack):
-    stack.pop()
-    return stack[-1]
+    return stack.pop()
 
 def D_(u1,u2,d,D,stack):
-    stack.append((u1,u2,d))
+    stack.clear()
     x=random.choice(D)
     while(x==d):
         x=random.choice(D)
     return (u1,u2,x)
 
 def E(u1,u2,d,starter,n,unused,unused_sums,D,stack):
-    stack.append((u1,u2,d))
+    stack.clear()
     d_1 = min((u1-u2)%n,(u2-u1)%n)
     if d_1 not in D and (u1+u2)%n in unused_sums:
         (x,y) = p=get_pair_by_diff(starter,n,d_1)
@@ -189,6 +192,7 @@ def speedy(starter,n,deficiency,D,unused,unused_sums,stack):
 
         could_do_a = A(u1,u2,d,starter,n,unused,unused_sums,D,stack)
         if could_do_a:
+            stack.clear()
             deficiency-=1
             if deficiency>0:
                 (u1,u2,d) = pick_random_unused(unused,D) #choose any distinct u1,u2, and d
@@ -198,17 +202,20 @@ def speedy(starter,n,deficiency,D,unused,unused_sums,stack):
                 could_do_b = B(u1,u2,d,starter,n,unused,unused_sums,D,stack)
                 if not could_do_b:
                     if len(stack)>0:
-                        (u1,u2,d) = C(stack)
-                        break
-                    elif len(D)>0:
+                        print("C")
+                        #(u1,u2,d) = C(stack)
+                        (starter,unused,unused_sums,D,u1,u2,d) = C(stack)
+                    elif len(D)>1:
+                        print("D")
                         (u1,u2,d) = D_(u1,u2,d,D,stack)
                         break
                     else:
                         print("E")
-                        (u1,u2,d) = E(u1,u2,d,D,stack)
+                        (u1,u2,d) = E(u1,u2,d,starter,n,unused,unused_sums,D,stack)
                         break
                 else:
-                    (u1,u2,d) = stack[-1]
+                    (starter,unused,unused_sums,D,u1,u2,d) = stack[-1]
+                    print("Step B","starter:",starter,"unused:",unused,"D",D,"u1:",u1,"u2:",u2,"d:",d)
         
         #I think I have some bug somewhere in the algorithm so this is how i am checking for fails
         if len(stack)>3*n: 
@@ -263,7 +270,7 @@ def assert_valid_strong_starter(starter,n):
     return True
 
 starter = [] # S={}
-t=(97-1)//2 # change this for different results
+t=(13-1)//2 # change this for different results
 n=2*t+1
 print(f"N = {n}")
 #assert n%3!=0
@@ -303,7 +310,7 @@ def test(t,n,starter):
     print(starter)
 def extreme():
     test(t,n,[])
-num_threads=8
+num_threads=1
 threads = []
 for i in range(num_threads):
     threads.append(threading.Thread(target=extreme))
